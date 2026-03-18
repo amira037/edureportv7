@@ -1,4 +1,4 @@
-var CACHE = 'rpt-v1';
+var CACHE = 'rpt-v1.2';
 var ASSETS = [
   './',
   './index.html',
