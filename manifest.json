@@ -2,33 +2,46 @@
   "name": "수업 리포트 메이커",
   "short_name": "수업리포트",
   "description": "과외·학원 선생님을 위한 수업 결과 리포트 메이커. 진도·성적·납부내역을 한 번에 정리하고 카카오톡으로 바로 전송.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "id": "/edureportv7/",
+  "start_url": "/edureportv7/",
+  "scope": "/edureportv7/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FFFDF5",
   "theme_color": "#E6A800",
   "lang": "ko",
+  "dir": "ltr",
   "categories": ["education", "productivity"],
   "icons": [
-    { "src": "icons/icon-72x72.png",   "sizes": "72x72",   "type": "image/png" },
-    { "src": "icons/icon-96x96.png",   "sizes": "96x96",   "type": "image/png" },
-    { "src": "icons/icon-128x128.png", "sizes": "128x128", "type": "image/png" },
-    { "src": "icons/icon-144x144.png", "sizes": "144x144", "type": "image/png" },
-    { "src": "icons/icon-152x152.png", "sizes": "152x152", "type": "image/png" },
-    { "src": "icons/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-384x384.png", "sizes": "384x384", "type": "image/png" },
-    { "src": "icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-192x192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon-512x512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ],
-  "screenshots": [
     {
-      "src": "icons/screenshot-mobile.png",
-      "sizes": "390x844",
+      "src": "/edureportv7/icons/icon-72x72.png",
+      "sizes": "72x72",
       "type": "image/png",
-      "form_factor": "narrow",
-      "label": "수업 리포트 입력 화면"
+      "purpose": "any"
+    },
+    {
+      "src": "/edureportv7/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/edureportv7/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/edureportv7/icons/icon-192x192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/edureportv7/icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
