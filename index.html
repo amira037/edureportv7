@@ -13,12 +13,13 @@
 <meta name="theme-color" content="#E6A800">
 <meta name="description" content="국어 수업 결과 리포트 메이커">
 
-<!-- ── PWA 매니페스트 (인라인 blob) ── -->
-<link id="pwa-manifest" rel="manifest">
+<!-- ── PWA 매니페스트 ── -->
+<link rel="manifest" href="./manifest.json">
 
-<!-- ── 앱 아이콘 (SVG → base64) ── -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%23E6A800'/%3E%3Ctext x='96' y='130' font-size='100' text-anchor='middle' font-family='sans-serif'%3E📋%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%23E6A800'/%3E%3Ctext x='96' y='130' font-size='100' text-anchor='middle' font-family='sans-serif'%3E📋%3C/text%3E%3C/svg%3E">
+<!-- ── 앱 아이콘 ── -->
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512x512.png">
 
 <title>수업 리포트 메이커</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -234,7 +235,7 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
     <div class="row3">
       <div><label>년도</label><select id="sel-year"></select></div>
       <div><label>월</label><select id="sel-month"></select></div>
-      <div><label>선생님</label><input type="text" id="teacher" placeholder="배새암" oninput="saveSetting('teacher',this.value)"></div>
+      <div><label>선생님</label><input type="text" id="teacher" placeholder="홍길동" oninput="saveSetting('teacher',this.value)"></div>
     </div>
   </div>
   <p class="sec-title">수업 그룹</p>
@@ -347,15 +348,15 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
   <p class="sec-title">기본 정보 <span class="badge">자동저장</span></p>
   <div class="card">
     <label>담당 선생님</label>
-    <input type="text" id="s-teacher" placeholder="배새암" oninput="saveSetting('teacher',this.value);var t=document.getElementById('teacher');if(t)t.value=this.value;">
+    <input type="text" id="s-teacher" placeholder="홍길동" oninput="saveSetting('teacher',this.value);var t=document.getElementById('teacher');if(t)t.value=this.value;">
     <label>과목</label>
-    <input type="text" id="s-subject" placeholder="국어" oninput="saveSetting('subject',this.value)">
+    <input type="text" id="s-subject" placeholder="과목명 (예: 국어)" oninput="saveSetting('subject',this.value)">
   </div>
   <p class="sec-title">입금 계좌 <span class="badge">자동저장</span></p>
   <div class="card">
-    <label>은행명</label><input type="text" id="s-bank" placeholder="카카오뱅크" oninput="saveSetting('bank',this.value)">
-    <label>계좌번호</label><input type="text" id="s-acct" placeholder="3333-15-4617850" oninput="saveSetting('acct',this.value)">
-    <label>예금주</label><input type="text" id="s-acctname" placeholder="배새암" oninput="saveSetting('acctname',this.value)">
+    <label>은행명</label><input type="text" id="s-bank" placeholder="하나은행" oninput="saveSetting('bank',this.value)">
+    <label>계좌번호</label><input type="text" id="s-acct" placeholder="123-456789-01234" oninput="saveSetting('acct',this.value)">
+    <label>예금주</label><input type="text" id="s-acctname" placeholder="홍길동" oninput="saveSetting('acctname',this.value)">
   </div>
   <p class="sec-title">학생 저장 <span class="badge">자동저장</span></p>
   <div id="saved-students-list"></div>
@@ -370,8 +371,8 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
   <div id="prog-presets-list"></div>
   <div class="card-sub" style="margin-top:6px;">
     <div class="row2">
-      <div><label>항목</label><input type="text" id="new-prog-label" placeholder="예: 매주 진행"></div>
-      <div><label>내용</label><input type="text" id="new-prog-value" placeholder="예: 독서록 1개"></div>
+      <div><label>항목</label><input type="text" id="new-prog-label" placeholder="예: 문학 단원"></div>
+      <div><label>내용</label><input type="text" id="new-prog-value" placeholder="예: 현대시 감상문 1편"></div>
     </div>
     <button class="btn-dark" style="margin-top:8px;" onclick="addProgPreset()">+ 진도 프리셋 추가</button>
   </div>
@@ -493,11 +494,11 @@ function renderClasses(){
       var goalOpts=goalPresets.map(function(g){return '<option value="'+escA(g.text)+'"'+(s.goal===g.text?' selected':'')+'>'+escA(g.text)+'</option>';}).join('');
       stuHtml+='<div class="card-sub"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:12px;font-weight:700;">학생 '+(si+1)+'</span><button class="icon-btn" onclick="removeStudent('+cls.id+','+s.sid+')">×</button></div>';
       if(savedStudents.length){stuHtml+='<label>저장된 학생 불러오기</label><select onchange="loadSavedStu('+cls.id+','+s.sid+',this.value)"><option value="">— 직접 입력 —</option>'+savedOpts+'</select>';}
-      stuHtml+='<div class="row2" style="margin-top:6px;"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="예지원" oninput="updateStu('+cls.id+','+s.sid+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="중1" oninput="updateStu('+cls.id+','+s.sid+',\'grade\',this.value)"></div></div>';
+      stuHtml+='<div class="row2" style="margin-top:6px;"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="김철수" oninput="updateStu('+cls.id+','+s.sid+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="고1" oninput="updateStu('+cls.id+','+s.sid+',\'grade\',this.value)"></div></div>';
       stuHtml+='<label>과정 목표</label>';
       if(goalPresets.length){stuHtml+='<select onchange="applyGoalPreset('+cls.id+','+s.sid+',this.value)"><option value="">— 직접 입력 —</option>'+goalOpts+'</select>';}
-      stuHtml+='<input id="gi-'+cls.id+'-'+s.sid+'" type="text" value="'+escA(s.goal)+'" placeholder="기초 펀더멘털 + 수행평가 대비" oninput="updateStu('+cls.id+','+s.sid+',\'goal\',this.value)" style="margin-top:'+(goalPresets.length?4:0)+'px;">';
-      if(isMulti){stuHtml+='<label>개인 메모</label><textarea placeholder="지도 방향이나 특이사항" oninput="updateStu('+cls.id+','+s.sid+',\'notes\',this.value)">'+escH(s.notes)+'</textarea>';}
+      stuHtml+='<input id="gi-'+cls.id+'-'+s.sid+'" type="text" value="'+escA(s.goal)+'" placeholder="수능 대비 독해력 향상" oninput="updateStu('+cls.id+','+s.sid+',\'goal\',this.value)" style="margin-top:'+(goalPresets.length?4:0)+'px;">';
+      if(isMulti){stuHtml+='<label>개인 메모</label><textarea placeholder="이번 달 수업 특이사항을 입력하세요" oninput="updateStu('+cls.id+','+s.sid+',\'notes\',this.value)">'+escH(s.notes)+'</textarea>';}
       // 성적 선택 버튼 + 선택된 성적 미리보기
       var grKey=gradeKey(s.name,s.grade);
       var grList=grades[grKey]||[];
@@ -559,7 +560,7 @@ function renderClasses(){
 // ═══ FEES ═══
 function buildFeeRow(f){
   var div=document.createElement('div');div.className='fee-wrap';div.id='fee-wrap-'+f.id;
-  div.innerHTML='<div class="fee-inner"><input type="text" value="'+escA(f.label)+'" placeholder="항목명" data-fid="'+f.id+'" data-field="label"><input type="text" value="'+escA(f.amount)+'" placeholder="금액" data-fid="'+f.id+'" data-field="amount"><button class="fee-toggle'+(f.isSub?' sub':'')+'" data-fid="'+f.id+'">'+(f.isSub?'소계':'일반')+'</button><button class="icon-btn" data-del="'+f.id+'">×</button></div>';
+  div.innerHTML='<div class="fee-inner"><input type="text" value="'+escA(f.label)+'" placeholder="수업료 또는 교재비" data-fid="'+f.id+'" data-field="label"><input type="text" value="'+escA(f.amount)+'" placeholder="100,000원" data-fid="'+f.id+'" data-field="amount"><button class="fee-toggle'+(f.isSub?' sub':'')+'" data-fid="'+f.id+'">'+(f.isSub?'소계':'일반')+'</button><button class="icon-btn" data-del="'+f.id+'">×</button></div>';
   return div;
 }
 function renderFeeRows(){var c=document.getElementById('fee-rows');c.innerHTML='';feeRows.forEach(function(f){c.appendChild(buildFeeRow(f));});}
@@ -614,7 +615,7 @@ function deleteSavedStudent(id){savedStudents=savedStudents.filter(function(s){r
 function updateSavedStu(id,field,val){var s=savedStudents.find(function(s){return s.id===id;});if(s){s[field]=val;saveAll();}}
 function renderSavedStudents(){
   var c=document.getElementById('saved-students-list');if(!savedStudents.length){c.innerHTML='';return;}
-  c.innerHTML=savedStudents.map(function(s,i){return '<div class="card" style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:12px;font-weight:700;">학생 '+(i+1)+'</span><button class="btn-danger" onclick="deleteSavedStudent('+s.id+')">삭제</button></div><div class="row2"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="예지원" oninput="updateSavedStu('+s.id+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="중1" oninput="updateSavedStu('+s.id+',\'grade\',this.value)"></div></div><label>기본 과정 목표</label><input type="text" value="'+escA(s.goal)+'" placeholder="기초 펀더멘털" oninput="updateSavedStu('+s.id+',\'goal\',this.value)"></div>';}).join('');
+  c.innerHTML=savedStudents.map(function(s,i){return '<div class="card" style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:12px;font-weight:700;">학생 '+(i+1)+'</span><button class="btn-danger" onclick="deleteSavedStudent('+s.id+')">삭제</button></div><div class="row2"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="김철수" oninput="updateSavedStu('+s.id+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="고1" oninput="updateSavedStu('+s.id+',\'grade\',this.value)"></div></div><label>기본 과정 목표</label><input type="text" value="'+escA(s.goal)+'" placeholder="수능 대비 독해력 향상" oninput="updateSavedStu('+s.id+',\'goal\',this.value)"></div>';}).join('');
 }
 function addGoalPreset(){var inp=document.getElementById('new-goal-input');var text=inp.value.trim();if(!text)return;goalPresets.push({id:ctr.goal++,text:text});inp.value='';renderGoalPresets();renderClasses();saveAll();}
 function deleteGoalPreset(id){goalPresets=goalPresets.filter(function(g){return g.id!==id;});renderGoalPresets();renderClasses();saveAll();}
@@ -1171,40 +1172,26 @@ function init(){
   if(S.acct)document.getElementById('s-acct').value=S.acct;
   if(S.acctname)document.getElementById('s-acctname').value=S.acctname;
   if(S.theme==='dark')document.getElementById('theme-icon').textContent='☾';
-  if(!classes.length){addClass();addStudent(0);}else renderClasses();
-  if(!feeRows.length){addFeeRow('예민성 수업료','250,000원');addFeeRow('홍지민 수업료','250,000원');addFeeRow('예지원 수업료','220,000원');addFeeRow('수업료 합계','',true);addFeeRow('교재비','62,600원');}
+  if(!classes.length){addClass();addStudent(classes[0].id);}else renderClasses();
+  if(!feeRows.length){renderFeeRows();}
   else{renderFeeRows();recalcFees();}
   renderSavedStudents();renderGoalPresets();renderProgPresets();
 }
 window.addEventListener('DOMContentLoaded',init);
 
-// ── PWA 매니페스트 동적 생성 ──
-(function(){
-  var iconSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="#E6A800"/><text x="96" y="130" font-size="100" text-anchor="middle" font-family="sans-serif">📋</text></svg>';
-  var iconUrl='data:image/svg+xml,'+encodeURIComponent(iconSvg);
-  var manifest={
-    name:'수업 리포트 메이커',
-    short_name:'수업리포트',
-    description:'국어 수업 결과 리포트 메이커',
-    start_url:'.',
-    display:'standalone',
-    orientation:'portrait',
-    background_color:'#FFFDF5',
-    theme_color:'#E6A800',
-    lang:'ko',
-    icons:[
-      {src:iconUrl,sizes:'192x192',type:'image/svg+xml',purpose:'any maskable'},
-      {src:iconUrl,sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}
-    ]
-  };
-  var blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
-  var url=URL.createObjectURL(blob);
-  document.getElementById('pwa-manifest').href=url;
-})();
-
-// ── 서비스워커 (오프라인 캐시) ──
+// ── 서비스워커 등록 ──
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(function(){});
+  navigator.serviceWorker.register('./sw.js').then(function(reg){
+    reg.addEventListener('updatefound', function(){
+      var newSW = reg.installing;
+      newSW.addEventListener('statechange', function(){
+        if(newSW.state === 'installed' && navigator.serviceWorker.controller){
+          // 업데이트 알림 (선택적)
+          console.log('새 버전이 준비되었습니다. 앱을 다시 시작하세요.');
+        }
+      });
+    });
+  }).catch(function(){});
 }
 
 // ── iOS 설치 안내 배너 ──
