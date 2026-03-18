@@ -170,12 +170,26 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
   <button class="theme-btn" onclick="toggleTheme()" id="theme-icon">☀</button>
 </nav>
 
-<!-- 앱 설치 배너 -->
+<!-- 앱 설치 배너 (Android / Desktop) -->
 <div id="install-bar" style="display:none;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--accent);color:#3D2800;font-size:12px;font-weight:500;gap:8px;">
   <span>📲 홈화면에 앱으로 추가할 수 있어요!</span>
   <div style="display:flex;gap:6px;flex-shrink:0;">
     <button onclick="installApp()" style="background:#3D2800;color:#FFD030;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">설치</button>
     <button onclick="document.getElementById('install-bar').style.display='none'" style="background:none;border:0.5px solid #3D2800;border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;color:#3D2800;font-family:inherit;">닫기</button>
+  </div>
+</div>
+
+<!-- iOS 설치 안내 배너 -->
+<div id="ios-install-bar" style="display:none;flex-direction:column;padding:11px 14px 13px;background:var(--accent);color:#3D2800;font-size:12px;font-weight:500;gap:7px;position:relative;">
+  <button onclick="document.getElementById('ios-install-bar').style.display='none';localStorage.setItem('ios_banner_closed','1');" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:16px;cursor:pointer;color:#3D2800;line-height:1;padding:2px 4px;">✕</button>
+  <span style="font-weight:700;font-size:13px;">📲 iPhone 홈화면에 앱으로 추가하기</span>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.07);border-radius:8px;padding:8px 10px;line-height:1.7;">
+    <span style="font-size:18px;flex-shrink:0;">①</span>
+    <span>하단 <strong>공유 버튼</strong> <span style="font-size:15px;">⎙</span> 을 탭하세요</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.07);border-radius:8px;padding:8px 10px;line-height:1.7;">
+    <span style="font-size:18px;flex-shrink:0;">②</span>
+    <span><strong>"홈 화면에 추가"</strong> 를 탭하세요</span>
   </div>
 </div>
 
@@ -846,7 +860,18 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(function(){});
 }
 
-// ── 설치 배너 ──
+// ── iOS 설치 안내 배너 ──
+(function(){
+  var isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  var isSafari=/safari/i.test(navigator.userAgent)&&!/crios|fxios|opios|mercury/i.test(navigator.userAgent);
+  var isStandalone=window.navigator.standalone===true;
+  var closed=localStorage.getItem('ios_banner_closed');
+  if(isIos&&isSafari&&!isStandalone&&!closed){
+    var bar=document.getElementById('ios-install-bar');
+    if(bar)bar.style.display='flex';
+  }
+})();
+
 var deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
