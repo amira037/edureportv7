@@ -235,7 +235,7 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
     <div class="row3">
       <div><label>년도</label><select id="sel-year"></select></div>
       <div><label>월</label><select id="sel-month"></select></div>
-      <div><label>선생님</label><input type="text" id="teacher" placeholder="홍길동" oninput="saveSetting('teacher',this.value)"></div>
+      <div><label>선생님</label><input type="text" id="teacher" placeholder="배새암" oninput="saveSetting('teacher',this.value)"></div>
     </div>
   </div>
   <p class="sec-title">수업 그룹</p>
@@ -303,7 +303,11 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
       </div>
       <label>메모</label>
       <input type="text" id="g-memo" placeholder="특이사항이나 코멘트">
-      <button class="btn-generate" style="margin-top:10px;padding:10px;font-size:13px;" onclick="addGradeEntry()">+ 성적 추가</button>
+      <div id="g-edit-indicator" style="display:none;margin-top:8px;padding:6px 10px;background:var(--surface3);border-radius:var(--radius-sm);font-size:11px;color:var(--text2);display:flex;align-items:center;justify-content:space-between;">
+        <span>✏️ 수정 중...</span>
+        <button onclick="cancelEditGrade()" style="background:none;border:none;font-size:11px;color:var(--text3);cursor:pointer;font-family:inherit;">취소</button>
+      </div>
+      <button class="btn-generate" id="g-submit-btn" style="margin-top:10px;padding:10px;font-size:13px;" onclick="addGradeEntry()">+ 성적 추가</button>
     </div>
 
     <p class="sec-title">성적 기록</p>
@@ -330,7 +334,7 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
 
 <!-- HISTORY -->
 <div id="page-history" class="page">
-  <p class="sec-title">최근 리포트 <span class="badge">최대 10개</span></p>
+  <p class="sec-title">최근 리포트 <span class="badge">최대 100개</span></p>
   <div id="history-list"></div>
   <div style="margin-top:16px;border-top:0.5px solid var(--border);padding-top:16px;">
     <p class="sec-title">프리셋 내보내기 / 불러오기</p>
@@ -348,15 +352,15 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
   <p class="sec-title">기본 정보 <span class="badge">자동저장</span></p>
   <div class="card">
     <label>담당 선생님</label>
-    <input type="text" id="s-teacher" placeholder="홍길동" oninput="saveSetting('teacher',this.value);var t=document.getElementById('teacher');if(t)t.value=this.value;">
+    <input type="text" id="s-teacher" placeholder="배새암" oninput="saveSetting('teacher',this.value);var t=document.getElementById('teacher');if(t)t.value=this.value;">
     <label>과목</label>
-    <input type="text" id="s-subject" placeholder="과목명 (예: 국어)" oninput="saveSetting('subject',this.value)">
+    <input type="text" id="s-subject" placeholder="국어" oninput="saveSetting('subject',this.value)">
   </div>
   <p class="sec-title">입금 계좌 <span class="badge">자동저장</span></p>
   <div class="card">
-    <label>은행명</label><input type="text" id="s-bank" placeholder="하나은행" oninput="saveSetting('bank',this.value)">
-    <label>계좌번호</label><input type="text" id="s-acct" placeholder="123-456789-01234" oninput="saveSetting('acct',this.value)">
-    <label>예금주</label><input type="text" id="s-acctname" placeholder="홍길동" oninput="saveSetting('acctname',this.value)">
+    <label>은행명</label><input type="text" id="s-bank" placeholder="카카오뱅크" oninput="saveSetting('bank',this.value)">
+    <label>계좌번호</label><input type="text" id="s-acct" placeholder="3333-15-4617850" oninput="saveSetting('acct',this.value)">
+    <label>예금주</label><input type="text" id="s-acctname" placeholder="배새암" oninput="saveSetting('acctname',this.value)">
   </div>
   <p class="sec-title">학생 저장 <span class="badge">자동저장</span></p>
   <div id="saved-students-list"></div>
@@ -371,8 +375,8 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
   <div id="prog-presets-list"></div>
   <div class="card-sub" style="margin-top:6px;">
     <div class="row2">
-      <div><label>항목</label><input type="text" id="new-prog-label" placeholder="예: 문학 단원"></div>
-      <div><label>내용</label><input type="text" id="new-prog-value" placeholder="예: 현대시 감상문 1편"></div>
+      <div><label>항목</label><input type="text" id="new-prog-label" placeholder="예: 매주 진행"></div>
+      <div><label>내용</label><input type="text" id="new-prog-value" placeholder="예: 독서록 1개"></div>
     </div>
     <button class="btn-dark" style="margin-top:8px;" onclick="addProgPreset()">+ 진도 프리셋 추가</button>
   </div>
@@ -494,11 +498,11 @@ function renderClasses(){
       var goalOpts=goalPresets.map(function(g){return '<option value="'+escA(g.text)+'"'+(s.goal===g.text?' selected':'')+'>'+escA(g.text)+'</option>';}).join('');
       stuHtml+='<div class="card-sub"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><span style="font-size:12px;font-weight:700;">학생 '+(si+1)+'</span><button class="icon-btn" onclick="removeStudent('+cls.id+','+s.sid+')">×</button></div>';
       if(savedStudents.length){stuHtml+='<label>저장된 학생 불러오기</label><select onchange="loadSavedStu('+cls.id+','+s.sid+',this.value)"><option value="">— 직접 입력 —</option>'+savedOpts+'</select>';}
-      stuHtml+='<div class="row2" style="margin-top:6px;"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="김철수" oninput="updateStu('+cls.id+','+s.sid+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="고1" oninput="updateStu('+cls.id+','+s.sid+',\'grade\',this.value)"></div></div>';
+      stuHtml+='<div class="row2" style="margin-top:6px;"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="예지원" oninput="updateStu('+cls.id+','+s.sid+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="중1" oninput="updateStu('+cls.id+','+s.sid+',\'grade\',this.value)"></div></div>';
       stuHtml+='<label>과정 목표</label>';
       if(goalPresets.length){stuHtml+='<select onchange="applyGoalPreset('+cls.id+','+s.sid+',this.value)"><option value="">— 직접 입력 —</option>'+goalOpts+'</select>';}
-      stuHtml+='<input id="gi-'+cls.id+'-'+s.sid+'" type="text" value="'+escA(s.goal)+'" placeholder="수능 대비 독해력 향상" oninput="updateStu('+cls.id+','+s.sid+',\'goal\',this.value)" style="margin-top:'+(goalPresets.length?4:0)+'px;">';
-      if(isMulti){stuHtml+='<label>개인 메모</label><textarea placeholder="이번 달 수업 특이사항을 입력하세요" oninput="updateStu('+cls.id+','+s.sid+',\'notes\',this.value)">'+escH(s.notes)+'</textarea>';}
+      stuHtml+='<input id="gi-'+cls.id+'-'+s.sid+'" type="text" value="'+escA(s.goal)+'" placeholder="기초 펀더멘털 + 수행평가 대비" oninput="updateStu('+cls.id+','+s.sid+',\'goal\',this.value)" style="margin-top:'+(goalPresets.length?4:0)+'px;">';
+      if(isMulti){stuHtml+='<label>개인 메모</label><textarea placeholder="지도 방향이나 특이사항" oninput="updateStu('+cls.id+','+s.sid+',\'notes\',this.value)">'+escH(s.notes)+'</textarea>';}
       // 성적 선택 버튼 + 선택된 성적 미리보기
       var grKey=gradeKey(s.name,s.grade);
       var grList=grades[grKey]||[];
@@ -560,7 +564,7 @@ function renderClasses(){
 // ═══ FEES ═══
 function buildFeeRow(f){
   var div=document.createElement('div');div.className='fee-wrap';div.id='fee-wrap-'+f.id;
-  div.innerHTML='<div class="fee-inner"><input type="text" value="'+escA(f.label)+'" placeholder="수업료 또는 교재비" data-fid="'+f.id+'" data-field="label"><input type="text" value="'+escA(f.amount)+'" placeholder="100,000원" data-fid="'+f.id+'" data-field="amount"><button class="fee-toggle'+(f.isSub?' sub':'')+'" data-fid="'+f.id+'">'+(f.isSub?'소계':'일반')+'</button><button class="icon-btn" data-del="'+f.id+'">×</button></div>';
+  div.innerHTML='<div class="fee-inner"><input type="text" value="'+escA(f.label)+'" placeholder="항목명" data-fid="'+f.id+'" data-field="label"><input type="text" value="'+escA(f.amount)+'" placeholder="금액" data-fid="'+f.id+'" data-field="amount"><button class="fee-toggle'+(f.isSub?' sub':'')+'" data-fid="'+f.id+'">'+(f.isSub?'소계':'일반')+'</button><button class="icon-btn" data-del="'+f.id+'">×</button></div>';
   return div;
 }
 function renderFeeRows(){var c=document.getElementById('fee-rows');c.innerHTML='';feeRows.forEach(function(f){c.appendChild(buildFeeRow(f));});}
@@ -615,7 +619,7 @@ function deleteSavedStudent(id){savedStudents=savedStudents.filter(function(s){r
 function updateSavedStu(id,field,val){var s=savedStudents.find(function(s){return s.id===id;});if(s){s[field]=val;saveAll();}}
 function renderSavedStudents(){
   var c=document.getElementById('saved-students-list');if(!savedStudents.length){c.innerHTML='';return;}
-  c.innerHTML=savedStudents.map(function(s,i){return '<div class="card" style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:12px;font-weight:700;">학생 '+(i+1)+'</span><button class="btn-danger" onclick="deleteSavedStudent('+s.id+')">삭제</button></div><div class="row2"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="김철수" oninput="updateSavedStu('+s.id+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="고1" oninput="updateSavedStu('+s.id+',\'grade\',this.value)"></div></div><label>기본 과정 목표</label><input type="text" value="'+escA(s.goal)+'" placeholder="수능 대비 독해력 향상" oninput="updateSavedStu('+s.id+',\'goal\',this.value)"></div>';}).join('');
+  c.innerHTML=savedStudents.map(function(s,i){return '<div class="card" style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:12px;font-weight:700;">학생 '+(i+1)+'</span><button class="btn-danger" onclick="deleteSavedStudent('+s.id+')">삭제</button></div><div class="row2"><div><label>이름</label><input type="text" value="'+escA(s.name)+'" placeholder="예지원" oninput="updateSavedStu('+s.id+',\'name\',this.value)"></div><div><label>학년</label><input type="text" value="'+escA(s.grade)+'" placeholder="중1" oninput="updateSavedStu('+s.id+',\'grade\',this.value)"></div></div><label>기본 과정 목표</label><input type="text" value="'+escA(s.goal)+'" placeholder="기초 펀더멘털" oninput="updateSavedStu('+s.id+',\'goal\',this.value)"></div>';}).join('');
 }
 function addGoalPreset(){var inp=document.getElementById('new-goal-input');var text=inp.value.trim();if(!text)return;goalPresets.push({id:ctr.goal++,text:text});inp.value='';renderGoalPresets();renderClasses();saveAll();}
 function deleteGoalPreset(id){goalPresets=goalPresets.filter(function(g){return g.id!==id;});renderGoalPresets();renderClasses();saveAll();}
@@ -742,7 +746,7 @@ function saveToHistory(){
   if(!lastReportData){alert('먼저 리포트를 생성해주세요.');return;}
   var name=autoReportName();
   reportHistory.unshift({name:name,data:lastReportData});
-  if(reportHistory.length>10)reportHistory=reportHistory.slice(0,10);
+  if(reportHistory.length>100)reportHistory=reportHistory.slice(0,100);
   saveAll();renderHistory();
   alert('저장되었습니다: '+name);
 }
@@ -812,7 +816,7 @@ function importPresets(input){
           var ex=reportHistory.find(function(rh){return rh.name===h.name&&rh.data&&rh.data.savedAt===h.data.savedAt;});
           if(!ex){reportHistory.push(h);added.h++;}
         });
-        if(reportHistory.length>10)reportHistory=reportHistory.slice(0,10);
+        if(reportHistory.length>100)reportHistory=reportHistory.slice(0,100);
       }
       if(data.grades&&typeof data.grades==='object'){
         Object.keys(data.grades).forEach(function(k){
@@ -1009,9 +1013,60 @@ function renderGradesPage(){
         '</div>'+
         (g.memo?'<div class="grade-memo">'+escH(g.memo)+'</div>':'')+
       '</div>'+
-      '<button class="icon-btn" onclick="deleteGradeEntry(\''+escA(key)+'\','+idx+')" title="삭제">×</button>'+
+      '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">'+
+        '<button class="btn-ghost" onclick="editGradeEntry(\''+escA(key)+'\','+idx+')" style="font-size:10px;padding:3px 8px;">수정</button>'+
+        '<button class="icon-btn" onclick="deleteGradeEntry(\''+escA(key)+'\','+idx+')" title="삭제" style="font-size:14px;">×</button>'+
+      '</div>'+
     '</div>';
   }).join('');
+}
+
+var _editingGradeKey=null, _editingGradeIdx=-1;
+
+function editGradeEntry(key,idx){
+  var g=(grades[key]||[])[idx];
+  if(!g)return;
+  _editingGradeKey=key; _editingGradeIdx=idx;
+  document.getElementById('g-date').value=g.date||'';
+  document.getElementById('g-type').value=g.type||'모의고사';
+  document.getElementById('g-score').value=g.score||'';
+  document.getElementById('g-grade').value=g.gradeVal||'';
+  document.getElementById('g-memo').value=g.memo||'';
+  var ind=document.getElementById('g-edit-indicator');
+  ind.style.display='flex';
+  var btn=document.getElementById('g-submit-btn');
+  btn.textContent='✓ 수정 저장';
+  btn.onclick=saveEditGrade;
+  // 폼으로 스크롤
+  document.getElementById('grade-entry-area').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cancelEditGrade(){
+  _editingGradeKey=null; _editingGradeIdx=-1;
+  document.getElementById('g-date').value='';
+  document.getElementById('g-type').value='모의고사';
+  document.getElementById('g-score').value='';
+  document.getElementById('g-grade').value='';
+  document.getElementById('g-memo').value='';
+  document.getElementById('g-edit-indicator').style.display='none';
+  var btn=document.getElementById('g-submit-btn');
+  btn.textContent='+ 성적 추가';
+  btn.onclick=addGradeEntry;
+}
+
+function saveEditGrade(){
+  if(_editingGradeIdx<0||!_editingGradeKey)return;
+  var date=document.getElementById('g-date').value.trim();
+  var type=document.getElementById('g-type').value;
+  var score=document.getElementById('g-score').value.trim();
+  var gradeVal=document.getElementById('g-grade').value;
+  var memo=document.getElementById('g-memo').value.trim();
+  if(!date&&!score){alert('일시 또는 점수를 입력해주세요.');return;}
+  var list=grades[_editingGradeKey]||[];
+  list[_editingGradeIdx]={date:date,type:type,score:score,gradeVal:gradeVal,memo:memo,savedAt:list[_editingGradeIdx].savedAt,updatedAt:new Date().toISOString()};
+  saveAll();
+  cancelEditGrade();
+  renderGradesPage();
 }
 
 function autoCalcGrade(){
