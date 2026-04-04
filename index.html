@@ -166,11 +166,11 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
 
 /* ★ BOXED PROGRESS TABLE */
 .prog-box{border:0.5px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;}
-.prog-box-row{display:grid;grid-template-columns:38% 1fr;border-bottom:0.5px solid var(--border);}
+.prog-box-row{display:grid;grid-template-columns:calc(6em + 20px) 1fr;border-bottom:0.5px solid var(--border);}
 .prog-box-row:last-child{border-bottom:none;}
 .prog-box-cell{padding:6px 10px;font-size:var(--fs-md);}
-.prog-box-cell.label{color:var(--text2);background:var(--surface2);border-right:0.5px solid var(--border);}
-.prog-box-cell.value{color:var(--text);font-weight:500;}
+.prog-box-cell.label{color:var(--text2);background:var(--surface2);border-right:0.5px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.prog-box-cell.value{color:var(--text);font-weight:500;word-break:keep-all;overflow-wrap:break-word;}
 
 /* ── 개별 진도: 최대 3열 그리드 ── */
 .rpt-indiv-grid{display:grid;grid-template-columns:repeat(var(--stu-cols,2),minmax(0,1fr));gap:6px;margin-bottom:4px;}
