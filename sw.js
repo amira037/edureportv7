@@ -1,6 +1,6 @@
 // ── 수업 리포트 메이커 Service Worker ──
 // 버전을 바꾸면 설치된 앱도 자동 업데이트됩니다
-var CACHE_NAME = 'rpt-v2.11';
+var CACHE_NAME = 'rpt-v2.111';
 var ASSETS = [
   './',
   './index.html',
