@@ -171,6 +171,10 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
 .prog-box-cell{padding:6px 10px;font-size:var(--fs-md);}
 .prog-box-cell.label{color:var(--text2);background:var(--surface2);border-right:0.5px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .prog-box-cell.value{color:var(--text);font-weight:500;word-break:keep-all;overflow-wrap:break-word;}
+/* 성적 항목 전용: 시험 이름이 길어도 줄바꿈 허용 */
+.grade-prog-box .prog-box-row{grid-template-columns:1fr auto;}
+.grade-prog-box .prog-box-cell.label{white-space:normal;overflow:visible;text-overflow:clip;word-break:keep-all;}
+.grade-prog-box .prog-box-cell.value{text-align:right;white-space:nowrap;}
 
 /* ── 개별 진도: 최대 3열 그리드 ── */
 .rpt-indiv-grid{display:grid;grid-template-columns:repeat(var(--stu-cols,2),minmax(0,1fr));gap:6px;margin-bottom:4px;}
@@ -491,7 +495,7 @@ function toggleIndiv(classId){var cls=getCls(classId);cls.showIndiv=!cls.showInd
 function addIndivProg(classId,sid){var cls=getCls(classId);var ip=cls.indivProgress.find(function(ip){return ip.sid===sid;});if(!ip||ip.items.length>=6)return;ip.items.push({id:ctr.stu++,label:'',value:''});renderClasses();saveAll();}
 function removeIndivProg(classId,sid,pid){var cls=getCls(classId);var ip=cls.indivProgress.find(function(ip){return ip.sid===sid;});if(!ip)return;ip.items=ip.items.filter(function(i){return i.id!==pid;});if(!ip.items.length)ip.items=[{id:ctr.stu++,label:'',value:''}];renderClasses();saveAll();}
 function updateIndivProg(classId,sid,pid,field,val){var cls=getCls(classId);var ip=cls.indivProgress.find(function(ip){return ip.sid===sid;});if(!ip)return;var item=ip.items.find(function(i){return i.id===pid;});if(item){item[field]=val;saveAll();}}
-function loadSavedStu(classId,sid,savedId){var cls=getCls(classId);if(!cls)return;var s=cls.students.find(function(s){return s.sid===sid;});if(!s)return;s.savedId=savedId;if(savedId){var saved=savedStudents.find(function(ss){return String(ss.id)===String(savedId);});if(saved){s.name=saved.name;s.grade=saved.grade;s.goal=saved.goal||'';if(saved.defaultFees&&saved.defaultFees.length){saved.defaultFees.forEach(function(df){addFeeRow(df.label,df.amount,df.isSub||false);});}}}renderClasses();saveAll();}
+function loadSavedStu(classId,sid,savedId){var cls=getCls(classId);if(!cls)return;var s=cls.students.find(function(s){return s.sid===sid;});if(!s)return;s.savedId=savedId;if(savedId){var saved=savedStudents.find(function(ss){return String(ss.id)===String(savedId);});if(saved){s.name=saved.name;s.grade=saved.grade;s.goal=saved.goal||'';if(saved.defaultFees&&saved.defaultFees.length){saved.defaultFees.forEach(function(df){feeRows.push({id:ctr.fee++,label:df.label||'',amount:df.amount||'',isSub:df.isSub||false});});renderFeeRows();recalcFees();}}}renderClasses();saveAll();}
 function applyGoalPreset(classId,sid,val){updateStu(classId,sid,'goal',val);var el=document.getElementById('gi-'+classId+'-'+sid);if(el)el.value=val;}
 function applyCommonProgPreset(classId,pid,val){if(!val)return;var parts=val.split('|');updateCommonProg(classId,pid,'label',parts[0]||'');updateCommonProg(classId,pid,'value',parts[1]||'');renderClasses();}
 function applyIndivProgPreset(classId,sid,pid,val){if(!val)return;var parts=val.split('|');updateIndivProg(classId,sid,pid,'label',parts[0]||'');updateIndivProg(classId,sid,pid,'value',parts[1]||'');renderClasses();}
@@ -686,7 +690,7 @@ function gradeSnippetHtml(s){
   var sel=s.selectedGrades&&s.selectedGrades.length?s.selectedGrades.map(function(i){return list[i];}).filter(Boolean):[];
   if(!sel.length)return'';
   var rows=sel.map(function(g){return '<div class="prog-box-row"><div class="prog-box-cell label">'+escH(g.date)+' '+escH(g.type)+'</div><div class="prog-box-cell value">'+escH(g.score)+'점'+(g.gradeVal?' · '+escH(g.gradeVal):''+(g.memo?' <span style="color:var(--text2);font-weight:400;">'+escH(g.memo)+'</span>':''))+'</div></div>';}).join('');
-  return'<div class="rpt-section-label">📊 성적</div><div class="prog-box">'+rows+'</div>';
+  return'<div class="rpt-section-label">📊 성적</div><div class="prog-box grade-prog-box">'+rows+'</div>';
 }
 function progBoxHtml(items){
   if(!items.length)return'';
