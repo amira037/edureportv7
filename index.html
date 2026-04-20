@@ -174,7 +174,7 @@ textarea{resize:vertical;min-height:54px;line-height:1.6;}
 /* 성적 항목 전용: 시험 이름이 길어도 줄바꿈 허용 */
 .grade-prog-box .prog-box-row{grid-template-columns:1fr auto;}
 .grade-prog-box .prog-box-cell.label{white-space:normal;overflow:visible;text-overflow:clip;word-break:keep-all;}
-.grade-prog-box .prog-box-cell.value{text-align:right;white-space:nowrap;}
+.grade-prog-box .prog-box-cell.value{text-align:right;white-space:normal;word-break:keep-all;}
 
 /* ── 개별 진도: 최대 3열 그리드 ── */
 .rpt-indiv-grid{display:grid;grid-template-columns:repeat(var(--stu-cols,2),minmax(0,1fr));gap:6px;margin-bottom:4px;}
